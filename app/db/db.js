@@ -11,12 +11,12 @@ export function doSql(sql) {
     sql = sql || '';
     return new Promise((resolve, reject) => {
         db.query(sql, true)
-            .then(function(data) {
+            .then((data)=> {
                 resolve(data);
-            }, function(err) {
+            }, (err)=> {
                 reject(err);
             })
-            .done(function() {
+            .done(()=> {
                 pg.end();
             });
     });
