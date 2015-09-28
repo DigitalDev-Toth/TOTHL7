@@ -1,22 +1,21 @@
-
 let pg = require('pg-promise')();
-import bioris from './db.conf.js';
+import * as config from './db.conf.js';
 import moment from 'moment';
 
-let conn = bioris.postgres;
-let db = pg(conn);
+let conn = config.bioris.postgres;
+let dbRis = pg(conn);
 
 export function doSql(sql) {
     let results = [];
     sql = sql || '';
     return new Promise((resolve, reject) => {
-        db.query(sql, true)
-            .then((data)=> {
+        dbRis.query(sql, true)
+            .then((data) => {
                 resolve(data);
-            }, (err)=> {
+            }, (err) => {
                 reject(err);
             })
-            .done(()=> {
+            .done(() => {
                 pg.end();
             });
     });
@@ -39,3 +38,15 @@ export function insertLog(table, users, id, type, desc) {
         }
     });
 }
+export function findRut(rut) {
+    let sql = `SELECT id FROM patient WHEE rut=${rut} LIMIT 1`;
+    return new Promise((resolve, reject) => {
+        doSql(sql)
+            .then((row) => {
+                resolve(row);
+            }, (err) => {
+                reject(err);
+            });
+    });
+}
+
