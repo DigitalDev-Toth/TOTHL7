@@ -1,7 +1,7 @@
 
 export let bioris = {
     postgres: {
-        host: 'toth.cl',
+        host: 'localhost',
         user: 'postgres',
         password: 'justgoon',
         port: 5432,

@@ -1,19 +1,17 @@
-
 let config = require('../../../conf/config.js');
 
-export function buildAck(messages) {
-    let hl7 = messages[0];
-    let custom_message = messages[1];
+export function buildAck([messageNative, ackMessageReturn]) {
     return new Promise((resolve, reject) => {
-        let fieldsep = hl7.substring(3, 4);
-        let compsep = hl7.substring(4, 5);
-        let runtime_errors = [];
+        let fieldsep = messageNative.substring(3, 4);
+        let compsep = messageNative.substring(4, 5);
+        let runtime_errors = [],
+            response_type;
 
         //let msh = "MSH" + fieldsep;
         let msh = `MSH${fieldsep}`;
         let oldMsh = "";
 
-        let segments = hl7.split("\r");
+        let segments = messageNative.split("\r");
 
         for (let value of segments) {
             if (value.startsWith("MSH")) {
@@ -49,7 +47,12 @@ export function buildAck(messages) {
         msh = newMshArr.join(fieldsep);
 
         // Agrega segmento MSA
-        let msa = `MSA${fieldsep}AA${fieldsep}${oldMshArray[9]}|${custom_message}`;
+        if (ackMessageReturn == 'Message validated!') {
+            response_type = 'AA'; // Success
+        }else {
+            response_type = 'AR'; // En caso de error
+        }
+        let msa = `MSA${fieldsep}${response_type}${fieldsep}${oldMshArray[9]}|${ackMessageReturn}`;
         let ack = msh + "\r" + msa;
 
         // Agrega frame de inicio y fin al mensaje ACK

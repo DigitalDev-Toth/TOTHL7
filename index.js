@@ -13,17 +13,20 @@ let Server = net.createServer((socket) => {
 
     socket.on('data', (data) => {
         dataString += data; // Autoincrementa el stream para obtener todo el mensaje HL7
-        console.log("Received message");
         hl7.validateStream(dataString) //valido que llegue el mensaje completo
             .then(hl7.parse) // Parseo el mensaje
             .then(validate.validate) // Valido en el ris
             .then(ack.buildAck) //Creo ACK con mensaje customizado
             .then((ack) => {
                 console.log("Sending ACK");
-                socket.write(ack); // Envio ACK
+                socket.write(ack); // Envio ACK Success
+                dataString = "";
             })
-            .catch((err) => {
-                console.log(err); // Controlo los putos errores
+            .catch(ack.buildAck)// Construyo el ACK pero con error
+            .then((ackError) =>{
+                socket.write(ackError);
+                console.log('ACK error sended!');
+                dataString = "";
             });
     });
 });
