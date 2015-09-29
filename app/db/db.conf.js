@@ -1,3 +1,4 @@
+
 export let bioris = {
     postgres: {
         host: 'toth.cl',
@@ -7,5 +8,12 @@ export let bioris = {
         database: 'sanlorenzo'
     }
 };
-
-export default bioris;
+export let biopacs = {
+    postgres: {
+        host: 'toth.cl',
+        user: 'postgres',
+        password: 'justgoon',
+        port: 5433,
+        database: 'pacsdb'
+    }
+};

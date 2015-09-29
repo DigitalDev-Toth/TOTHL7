@@ -16,7 +16,7 @@ let Server = net.createServer((socket) => {
         console.log("Received message");
         hl7.validateStream(dataString) //valido que llegue el mensaje completo
             .then(hl7.parse) // Parseo el mensaje
-            .then(validate.test) // Valido en el ris
+            .then(validate.validate) // Valido en el ris
             .then(ack.buildAck) //Creo ACK con mensaje customizado
             .then((ack) => {
                 console.log("Sending ACK");

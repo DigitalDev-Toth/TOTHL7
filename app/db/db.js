@@ -2,14 +2,14 @@ let pg = require('pg-promise')();
 import * as config from './db.conf.js';
 import moment from 'moment';
 
-let conn = config.bioris.postgres;
-let dbRis = pg(conn);
-
-export function doSql(sql) {
-    let results = [];
+export function doSql(sql, server) {
+    server = server || 'bioris'; // Por defecto consulto en el RIS
     sql = sql || '';
+    let conn = config[server].postgres, // Consultas entre RIS y PACS
+        db = pg(conn),
+        results = [];
     return new Promise((resolve, reject) => {
-        dbRis.query(sql, true)
+        db.query(sql, true)
             .then((data) => {
                 resolve(data);
             }, (err) => {
@@ -20,13 +20,12 @@ export function doSql(sql) {
             });
     });
 }
-export function insertLog(table, users, id, type, desc) {
-    desc = desc || '';
-    let time = moment().format("HH:mm");
-    let date = moment().format("YYYY-MM-DD");
-    let sql = `INSERT INTO logs(time, date, users, tablefrom, tableid, type, description, host) VALUES('${time}', '${date}', ${users}, '${table}', ${id}, '${type}', '${desc}', 'localhost')`;
+export function insertLog(calendar, message, ack, status) {
+    let date = moment().format("YYYY-MM-DD HH:mm:ss");
+    status = status == 'success' ? 1 : 2; // Si es success status = 1 sino == 2 // Ver table status_log
+    let sql = `INSERT INTO log_hl7 ( calendar, message, ack, date, status ) VALUES( ${calendar}, '${message}', '${ack}', '${date}', ${status} )`;
     return new Promise((resolve, reject) => {
-        if (table && Number.isSafeInteger(users) && Number.isSafeInteger(id) && type) {
+        if (message && Number.isSafeInteger(calendar) && Number.isSafeInteger(status) && ack) {
             doSql(sql)
                 .then((data) => {
                     resolve(data);
@@ -39,7 +38,7 @@ export function insertLog(table, users, id, type, desc) {
     });
 }
 export function findRut(rut) {
-    let sql = `SELECT id FROM patient WHEE rut=${rut} LIMIT 1`;
+    let sql = `SELECT id FROM patient WHERE rut='${rut}' LIMIT 1`;
     return new Promise((resolve, reject) => {
         doSql(sql)
             .then((row) => {
@@ -49,4 +48,14 @@ export function findRut(rut) {
             });
     });
 }
-
+export function findAccession(studyUID) {
+    let sql = `SELECT accession_no FROM study WHERE study_iuid='${studyUID}'`;
+    return new Promise((resolve, reject) => {
+        doSql(sql, 'biopacs') //Uso configuracion para acceder al pacs
+            .then((row) => {
+                resolve(row);
+            }, (err) => {
+                reject(err);
+            });
+    });
+}
