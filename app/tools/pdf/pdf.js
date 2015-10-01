@@ -12,7 +12,7 @@ export function getPdf(pdf, type, name) {
                 .catch((err) => {
                     reject(err);
                 });
-        }else {
+        } else {
             pdf_encapsulated(pdf, name)
                 .then((data) => {
                     resolve(data);

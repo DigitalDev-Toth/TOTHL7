@@ -49,7 +49,7 @@ export function buildAck([messageNative, ackMessageReturn]) {
         // Agrega segmento MSA
         if (ackMessageReturn == 'Message validated!') {
             response_type = 'AA'; // Success
-        }else {
+        } else {
             response_type = 'AR'; // En caso de error
         }
         let msa = `MSA${fieldsep}${response_type}${fieldsep}${oldMshArray[9]}|${ackMessageReturn}`;

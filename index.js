@@ -18,12 +18,15 @@ let Server = net.createServer((socket) => {
             .then(validate.validate) // Valido en el ris
             .then(ack.buildAck) //Creo ACK con mensaje customizado
             .then((ack) => {
+                //Guardo log...Se supone
+                validate.logData.insertLog(validate.logData.calendar, validate.logData.messageNative, ack, 'success');
                 console.log("Sending ACK");
                 socket.write(ack); // Envio ACK Success
                 dataString = "";
             })
-            .catch(ack.buildAck)// Construyo el ACK pero con error
-            .then((ackError) =>{
+            .catch(ack.buildAck) // Construyo el ACK pero con error
+            .then((ackError) => {
+                validate.logData.insertLog(validate.logData.calendar, validate.logData.messageNative, ackError, 'error');
                 socket.write(ackError);
                 console.log('ACK error sended!');
                 dataString = "";

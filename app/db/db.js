@@ -22,11 +22,12 @@ export function doSql(sql, server) {
 }
 /* Guardo un log de las transacciones realizadas */
 export function insertLog(calendar, message, ack, status) {
+    console.log(message);
     let date = moment().format("YYYY-MM-DD HH:mm:ss");
     status = status == 'success' ? 1 : 2; // Si es success status = 1 sino == 2 // Ver table status_log
     let sql = `INSERT INTO log_hl7 ( calendar, message, ack, date, status ) VALUES( ${calendar}, '${message}', '${ack}', '${date}', ${status} )`;
     return new Promise((resolve, reject) => {
-        if (message && Number.isSafeInteger(calendar) && Number.isSafeInteger(status) && ack) {
+        if (message && calendar && Number.isSafeInteger(status) && ack) {
             doSql(sql)
                 .then((data) => {
                     resolve(data);
@@ -113,7 +114,7 @@ export function createReport([calendar, idExternal]) {
                     doSql(`UPDATE calendar_exam SET history=${id} WHERE calendar=${calendar}`)
                         .then((row) => {
                             if (row) {
-                                resolve(id);
+                                resolve([id, calendar]);
                             } else {
                                 resolve('ERROR: No se ha podido crear informe');
                             }
