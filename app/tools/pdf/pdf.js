@@ -27,8 +27,9 @@ export function getPdf(pdf, type, name) {
 function pdf_url(pdf, name) {
     return new Promise((resolve, reject) => {
         //directory: config.pathPdf,
+        //directory: "./pdfs/",
         let options = {
-            directory: "./pdfs/",
+            directory: config.pathPdf,
             filename: `${name}.pdf`
         };
 
@@ -45,8 +46,8 @@ function pdf_url(pdf, name) {
 function pdf_encapsulated(pdf, name) {
     return new Promise((resolve, reject) => {
         let bitmap = new Buffer(pdf, 'base64');
-        let file = `./pdfs/${name}.pdf`;
-        //let file = `${config.pathPdf}${name}.pdf`;
+        //let file = `./pdfs/${name}.pdf`;
+        let file = `${config.pathPdf}${name}.pdf`;
         fs.writeFile(file, bitmap, function(err) {
             if (err) {
                 reject(err);

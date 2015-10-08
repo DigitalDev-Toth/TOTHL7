@@ -5,7 +5,7 @@ export let bioris = {
         user: 'postgres',
         password: 'justgoon',
         port: 5432,
-        database: 'sanlorenzo'
+        database: 'sl'
     }
 };
 export let biopacs = {

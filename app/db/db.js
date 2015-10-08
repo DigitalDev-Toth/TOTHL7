@@ -55,6 +55,7 @@ export function findRut(rut) {
 export function findAccession([studyUID, idExternal]) {
     idExternal = idExternal || '';
     let sql = `SELECT accession_no FROM study WHERE study_iuid='${studyUID}'`;
+    console.log(sql);
     return new Promise((resolve, reject) => {
         doSql(sql, 'biopacs') //Uso configuracion para acceder al pacs
             .then((row) => {
@@ -87,7 +88,7 @@ export function assocTothWithExternal(history, external) {
 /* VERIFICA SI EXISTE EL CALENDAR */
 export function validateCalendar([calendar, idExternal]) {
     idExternal = idExternal || null;
-    let sql = `SELECT exam_state FROM calendar WHERE id=${calendar}`;
+    let sql = `SELECT id FROM calendar WHERE id=${calendar}`;
     return new Promise((resolve, reject) => {
         doSql(sql)
             .then((row) => {
@@ -111,18 +112,19 @@ export function createReport([calendar, idExternal]) {
             .then((row) => {
                 if (row.length > 0) {
                     let id = row[0].id;
-                    doSql(`UPDATE calendar_exam SET history=${id} WHERE calendar=${calendar}`)
+                    doSql(`UPDATE calendar_exam SET history=${id}, exam_state='validado' WHERE calendar=${calendar}`)
                         .then((row) => {
-                            if (row) {
-                                resolve([id, calendar]);
-                            } else {
-                                resolve('ERROR: No se ha podido crear informe');
-                            }
+                            doSql(`UPDATE calendar SET exam_state='validado' WHERE id=${calendar}`)
+                                .then((row) => {
+                                        resolve([id, calendar]);
+                                }, (err) => {
+                                    reject(err);
+                                });
                         }, (err) => {
                             reject(err);
                         });
                 } else {
-                    resolve('ERROR: No se ha podido crear informe');
+                    reject('ERROR: No se ha podido crear informe');
                 }
             }, (err) => {
                 reject(err);

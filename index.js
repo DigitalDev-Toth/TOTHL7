@@ -22,6 +22,7 @@ let Server = net.createServer((socket) => {
                 validate.logData.insertLog(validate.logData.calendar, validate.logData.messageNative, ack, 'success');
                 console.log("Sending ACK");
                 socket.write(ack); // Envio ACK Success
+                //socket.destroy();
                 dataString = "";
             })
             .catch(ack.buildAck) // Construyo el ACK pero con error
@@ -29,9 +30,14 @@ let Server = net.createServer((socket) => {
                 validate.logData.insertLog(validate.logData.calendar, validate.logData.messageNative, ackError, 'error');
                 socket.write(ackError);
                 console.log('ACK error sended!');
+                socket.destroy();
                 dataString = "";
             });
     });
+    socket.on('close', function(data) {
+        console.log('CLOSED: ' + socket.remoteAddress + ' ' + socket.remotePort);
+    });
+
 });
 console.log("Listening for HL7 MLLP on " + config.ip + ":" + config.port);
 
