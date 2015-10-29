@@ -1,6 +1,6 @@
 module.exports = {
     port: 2576,
-    ip: "127.0.0.1",
+    ip: "192.168.0.31",
     // Frames inicio y fin de mensaje MLP
     startFrame: String.fromCharCode(11),
     endFrame: String.fromCharCode(28) + String.fromCharCode(13),
