@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "babel-node index.js"
+    "start": "pm2 start index.js -f --interpreter babel-node --name hl7 && pm2 logs hl7.log"
   },
   "author": "",
   "license": "ISC",
